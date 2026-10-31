@@ -24,11 +24,21 @@ $content = @"
 "@
 Set-Content -Path $shim -Value $content -Encoding ASCII
 
+$readonlyShim = Join-Path $InstallDir 'dsh-acp-bridge-readonly.cmd'
+$readonlyContent = @"
+@echo off
+set DSH_PERMISSION_MODE=read-only
+"$nodePath" "$entry" %*
+"@
+Set-Content -Path $readonlyShim -Value $readonlyContent -Encoding ASCII
+
 Write-Host ''
 Write-Host 'HarnessLink bridge installed.' -ForegroundColor Green
-Write-Host "  Shim: $shim"
+Write-Host "  Normal:   $shim"
+Write-Host "  Readonly: $readonlyShim"
 Write-Host ''
-Write-Host 'Paste this into Happier -> Custom ACP backend -> Command:'
+Write-Host 'Paste one of these into Happier -> Custom ACP backend -> Command:'
 Write-Host "  $shim" -ForegroundColor Cyan
+Write-Host "  $readonlyShim  (use this to test approvals)" -ForegroundColor Cyan
 Write-Host ''
 Write-Host 'Keep Args empty, and enable "Supports session resume".'
