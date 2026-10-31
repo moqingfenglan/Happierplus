@@ -1,0 +1,19 @@
+{
+  "name": "harnesslink",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mobile control room for DeepSeek Harness, built on Happier",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "npm run build --workspace dsh-acp-bridge",
+    "typecheck": "npm run typecheck --workspace dsh-acp-bridge",
+    "test": "npm run test --workspace dsh-acp-bridge",
+    "smoke": "npm run smoke --workspace dsh-acp-bridge"
+  }
+}

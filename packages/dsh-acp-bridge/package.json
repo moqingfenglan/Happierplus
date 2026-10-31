@@ -1,0 +1,30 @@
+{
+  "name": "dsh-acp-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "ACP bridge that makes DeepSeek Harness work with Happier",
+  "license": "MIT",
+  "bin": {
+    "dsh-acp-bridge": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "fzstd": "^0.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.9.0",
+    "vitest": "^5.0.5"
+  }
+}
+
