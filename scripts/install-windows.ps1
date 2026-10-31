@@ -15,11 +15,12 @@ if (-not $node) {
   throw 'Node.js 22+ is required but was not found on PATH.'
 }
 
+$nodePath = $node.Source
 New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
 $shim = Join-Path $InstallDir 'dsh-acp-bridge.cmd'
 $content = @"
 @echo off
-node "$entry" %*
+"$nodePath" "$entry" %*
 "@
 Set-Content -Path $shim -Value $content -Encoding ASCII
 
