@@ -20,6 +20,7 @@ New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
 $shim = Join-Path $InstallDir 'dsh-acp-bridge.cmd'
 $content = @"
 @echo off
+set HARNESSLINK_DSH_PROFILE=acp-dsh
 "$nodePath" "$entry" %*
 "@
 Set-Content -Path $shim -Value $content -Encoding ASCII
@@ -27,6 +28,7 @@ Set-Content -Path $shim -Value $content -Encoding ASCII
 $readonlyShim = Join-Path $InstallDir 'dsh-acp-bridge-readonly.cmd'
 $readonlyContent = @"
 @echo off
+set HARNESSLINK_DSH_PROFILE=acp-dsh
 set DSH_PERMISSION_MODE=read-only
 "$nodePath" "$entry" %*
 "@

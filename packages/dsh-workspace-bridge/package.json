@@ -1,0 +1,12 @@
+{
+  "name": "dsh-happier-workspace-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Attach ACP-created DeepSeek Harness sessions to their desktop workspaces",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "license": "MIT"
+}
