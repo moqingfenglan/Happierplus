@@ -12,14 +12,33 @@
  * they are left untouched.
  */
 
+import { appendFileSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
+
 export const name = 'happier-workspace-bridge';
 
 export const inject = ['workspaceRegistry', 'sessions', 'sessionPersistence'];
+
+const logFile = join(
+  process.env.DSH_HOME?.trim() || join(homedir(), '.dsh'),
+  'happier-workspace-bridge.log',
+);
+
+function log(message) {
+  try {
+    appendFileSync(logFile, `${new Date().toISOString()} ${message}\n`);
+  } catch {
+    // diagnostics must never break the host
+  }
+}
 
 export function apply(ctx) {
   const logger = ctx.logger ?? console;
   const inFlight = new Set();
   const settled = new Set();
+
+  log('plugin loaded');
 
   const ensure = async (sessionId, header) => {
     if (!sessionId || !header || typeof header !== 'object') return;
@@ -35,11 +54,12 @@ export function apply(ctx) {
       if (!workspace) return;
       if (!workspace.sessionIds.includes(sessionId)) {
         await workspace.attachSession(sessionId);
+        log(`attached ${sessionId} -> ${workspace.path}`);
         logger.info?.(`[happier-workspace-bridge] attached ${sessionId} -> ${workspace.path}`);
       }
       settled.add(sessionId);
     } catch (error) {
-      // Missing/unreadable directories are expected: leave the session ungrouped.
+      log(`skipped ${sessionId}: ${error instanceof Error ? error.message : String(error)}`);
       logger.debug?.(
         `[happier-workspace-bridge] skipped ${sessionId}: ${error instanceof Error ? error.message : String(error)}`,
       );
@@ -49,18 +69,25 @@ export function apply(ctx) {
   };
 
   const reconcile = async () => {
+    let live = 0;
     for (const session of ctx.sessions?.list?.() ?? []) {
+      live += 1;
       await ensure(session?.id ?? session?.header?.id, session?.header);
     }
 
-    if (typeof ctx.sessionPersistence?.list !== 'function') return;
-    for (const snapshot of await ctx.sessionPersistence.list()) {
-      const header = snapshot?.header ?? snapshot;
-      await ensure(header?.id ?? snapshot?.id, header);
+    let persisted = 0;
+    if (typeof ctx.sessionPersistence?.list === 'function') {
+      for (const snapshot of await ctx.sessionPersistence.list()) {
+        persisted += 1;
+        const header = snapshot?.header ?? snapshot;
+        await ensure(header?.id ?? snapshot?.id, header);
+      }
     }
+    log(`reconcile done live=${live} persisted=${persisted}`);
   };
 
   void reconcile().catch((error) => {
+    log(`reconcile failed: ${error instanceof Error ? error.stack ?? error.message : String(error)}`);
     logger.warn?.('[happier-workspace-bridge] reconcile failed', error);
   });
 
@@ -70,3 +97,5 @@ export function apply(ctx) {
     void ensure(session.id ?? session.header?.id, session.header);
   });
 }
+
+export default { name, inject, apply };
