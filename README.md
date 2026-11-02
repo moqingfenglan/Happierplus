@@ -31,9 +31,19 @@ DeepSeek Harness ships an automation-only ACP server (`dsh --profile acp`), but 
 
 ## Status
 
-Early. The first milestone is the ACP bridge; the Happier fork with a first-class DSH provider comes next.
+Working end to end:
 
-See [docs/DSH-Happier-手机控制台-完整方案.md](docs/DSH-Happier-手机控制台-完整方案.md) for the full design, phased plan and environment assessment.
+- **Android app v0.1.6** — DSH whale icon, native `DeepSeek Harness` agent, in-app APK updates.
+- **Custom ACP** — the bridge below works with the stock Happier daemon.
+- **Native DSH** — works with the HarnessLink fork daemon (`0.2.17-dsh`).
+- **DSH desktop sidebar** — `packages/dsh-workspace-bridge` attaches ACP sessions to workspaces.
+- **Codex / ChatGPT** — Codex CLI sessions are available from the same app.
+
+The Android app and the Happier fork live in
+[moqingfenglan/Happierplus-app](https://github.com/moqingfenglan/Happierplus-app).
+This repository keeps the bridge, the DSH workspace plugin and the Windows setup scripts.
+
+See [docs/DSH-Happier-手机控制台-完整方案.md](docs/DSH-Happier-手机控制台-完整方案.md) for the design and environment notes.
 
 ## Quick start (Windows)
 
@@ -66,11 +76,17 @@ The bridge auto-detects a standard Windows DeepSeek Harness install. Override wi
 ## Layout
 
 ```
-packages/dsh-acp-bridge/   the ACP proxy + history replay
-docs/                      design and operations notes
-scripts/                   smoke test and Windows helpers
-.github/workflows/         CI
+packages/dsh-acp-bridge/         the ACP proxy + history replay
+packages/dsh-workspace-bridge/   DSH desktop workspace membership plugin
+scripts/install-windows.ps1      Windows bridge shims and acp-dsh profile
+docs/                            design and operations notes
+.github/workflows/               CI
 ```
+
+## Releases
+
+- Android APK: [latest release](https://github.com/moqingfenglan/Happierplus-app/releases/latest)
+- Fork CLI: built by `cli-windows.yml` in the app repository.
 
 ## License
 
